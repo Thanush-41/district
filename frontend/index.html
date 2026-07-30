@@ -8,23 +8,52 @@
   </head>
   <body>
     <main>
-      <h1>District Lead Dashboard</h1>
+      <header class="app-header">
+        <h1>District Lead Dashboard</h1>
+        <div class="cart-indicator" id="cart-indicator" title="Saved / Add to Cart">
+          🛒 <span id="cart-count">0</span> saved
+        </div>
+      </header>
+      <section class="search-bar">
+        <input id="place-input" type="text" placeholder="Enter exact place (e.g. Panaji, Goa)" />
+        <button id="search-btn" title="Search nearby restaurants">🔍</button>
+        <span id="search-status"></span>
+      </section>
+      <nav class="filter-bar" id="filter-bar">
+        <button data-filter="all" class="active">All</button>
+        <button data-sort="isNew">New First</button>
+        <button data-sort="priority">High Priority First</button>
+        <button data-filter="notOnboarded">Not Onboarded</button>
+        <button data-filter="runningAds">Running Ads</button>
+        <button data-filter="important">Important</button>
+        <button data-filter="unread">Unread</button>
+        <button data-filter="saved">🛒 Saved</button>
+        <button data-action="reset">Reset</button>
+      </nav>
       <section id="stats" class="cards"></section>
-      <section>
+      <section class="table-wrap">
         <h2>Restaurants</h2>
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Priority</th>
-              <th>Onboarded</th>
-              <th>Ads</th>
+              <th data-sort-key="name">Name</th>
+              <th data-sort-key="isNew">New</th>
+              <th data-sort-key="priority">Priority</th>
+              <th data-sort-key="district">District</th>
+              <th data-sort-key="ads">Ads</th>
+              <th data-sort-key="swiggy">Swiggy</th>
+              <th data-sort-key="zomato">Zomato</th>
+              <th data-sort-key="important">Important</th>
+              <th data-sort-key="read">Read</th>
+              <th data-sort-key="saved">Cart</th>
+              <th>Location</th>
             </tr>
           </thead>
-          <tbody id="restaurant-table"></tbody>
+          <tbody id="restaurant-table"><tr><td colspan="11" class="loading-row">Loading restaurants...</td></tr></tbody>
         </table>
       </section>
     </main>
-    <script src="app.js"></script>
+    <script src="config.js"></script>
+    <script src="app.js?v=5"></script>
   </body>
 </html>

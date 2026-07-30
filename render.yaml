@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: district-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: district
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: GOOGLE_FETCH_DETAILS
+        value: "true"
+      - key: SEARCH_CITIES
+        value: Goa
+      - key: SEARCH_KEYWORDS
+        value: "Cafe,Restaurant,Multi Cuisine,Bar,Hotel,Kitchen,Dining,Bistro"
+      - key: DISTRICT_RECHECK_DAYS
+        value: "1"
+      - key: META_RECHECK_DAYS
+        value: "1"
+      - key: SWIGGY_RECHECK_DAYS
+        value: "1"
+      - key: SCHEDULER_HOUR_UTC
+        value: "2"

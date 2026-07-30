@@ -1,13 +1,13 @@
-import os
 from typing import Dict, Optional
 
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 
+from app.config import settings
 from app.seed import seed_restaurants
 
-MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "district")
+MONGO_URI = settings.mongo_uri
+MONGO_DB_NAME = settings.mongo_db_name
 
 _client: Optional[MongoClient] = None
 _collection_name = "restaurants"
@@ -30,22 +30,29 @@ def get_client() -> Optional[MongoClient]:
     return _client
 
 
-def get_restaurants_db() -> Dict[str, dict]:
-    if not _in_memory_store:
-        load_seed_if_needed()
+def _ensure_seed_in_mongo(collection) -> None:
+    if collection.count_documents({}) == 0:
+        seed = seed_restaurants()
+        if seed:
+            collection.insert_many(list(seed.values()))
 
+
+def get_restaurants_db() -> Dict[str, dict]:
     client = get_client()
     if client is None:
+        if not _in_memory_store:
+            _in_memory_store.update(seed_restaurants())
         return _in_memory_store
 
     db = client[MONGO_DB_NAME]
     collection = db[_collection_name]
-    documents = list(collection.find({}))
-    if not documents:
-        return _in_memory_store
+    _ensure_seed_in_mongo(collection)
 
+    documents = list(collection.find({}))
+    _in_memory_store.clear()
     for document in documents:
         document_id = str(document.get("_id"))
+        document["_id"] = document_id
         _in_memory_store[document_id] = document
     return _in_memory_store
 
@@ -78,9 +85,19 @@ def list_restaurants_from_store() -> list[dict]:
 
 
 def load_seed_if_needed() -> None:
-    if _in_memory_store:
+    client = get_client()
+    if client is not None:
+        db = client[MONGO_DB_NAME]
+        collection = db[_collection_name]
+        _ensure_seed_in_mongo(collection)
         return
 
+    if not _in_memory_store:
+        _in_memory_store.update(seed_restaurants())
+
+
+def reset_store() -> None:
+    _in_memory_store.clear()
     _in_memory_store.update(seed_restaurants())
 
     client = get_client()
@@ -89,11 +106,5 @@ def load_seed_if_needed() -> None:
 
     db = client[MONGO_DB_NAME]
     collection = db[_collection_name]
-    if collection.count_documents({}) == 0:
-        for restaurant in _in_memory_store.values():
-            collection.insert_one(restaurant)
-
-
-def reset_store() -> None:
-    _in_memory_store.clear()
-    _in_memory_store.update(seed_restaurants())
+    collection.delete_many({})
+    collection.insert_many(list(_in_memory_store.values()))

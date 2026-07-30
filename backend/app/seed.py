@@ -14,7 +14,8 @@ def seed_restaurants() -> dict:
             },
             "district": {"checked": True, "onboarded": False, "payBill": False, "lastChecked": "2026-07-25"},
             "metaAds": {"runningAds": False, "facebookPage": None, "instagramPage": None, "lastSeen": "2026-07-25"},
-            "swiggy": {"available": True, "dineout": True},
-            "lead": {"score": 0, "priority": "LOW", "assignedTo": None, "exported": False},
+            "swiggy": {"available": True, "dineout": True, "lastChecked": "2026-07-25"},
+            "zomato": {"listed": False, "lastChecked": None},
+            "lead": {"score": 0, "priority": "LOW", "assignedTo": None, "exported": False, "read": False, "important": False, "saved": False},
         }
     }

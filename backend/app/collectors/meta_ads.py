@@ -1,7 +1,7 @@
 from typing import Dict
 
 from app.database.mongo import get_restaurants_db, save_restaurant
-from app.services import recompute_lead_score
+from app.services import current_timestamp, recompute_lead_score
 
 
 def sync_meta(restaurant_id: str, running_ads: bool, instagram_page: str | None = None, facebook_page: str | None = None) -> dict:
@@ -13,7 +13,7 @@ def sync_meta(restaurant_id: str, running_ads: bool, instagram_page: str | None 
     restaurant["metaAds"]["runningAds"] = running_ads
     restaurant["metaAds"]["facebookPage"] = facebook_page
     restaurant["metaAds"]["instagramPage"] = instagram_page
-    restaurant["metaAds"]["lastSeen"] = "2026-07-25"
+    restaurant["metaAds"]["lastSeen"] = current_timestamp()
     recompute_lead_score(restaurant)
     save_restaurant(restaurant)
     return restaurant

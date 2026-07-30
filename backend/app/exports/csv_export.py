@@ -3,11 +3,13 @@ import io
 from app.database.mongo import get_restaurants_db
 
 
-def build_csv() -> str:
+def build_csv(exclude_assigned: bool = True) -> str:
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=["restaurant_id", "name", "phone", "instagram", "website", "district_status", "rating", "reviews", "lead_score", "priority"])
     writer.writeheader()
     for restaurant_id, restaurant in get_restaurants_db().items():
+        if exclude_assigned and restaurant.get("lead", {}).get("assignedTo"):
+            continue
         writer.writerow(
             {
                 "restaurant_id": restaurant_id,
